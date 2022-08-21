@@ -9,6 +9,7 @@
 #define Vector3_hpp
 
 #include <iostream>
+#include <math.h>
 
 /* Inline, ODR */
 // * Inline function's body is inserted at the point of call
@@ -96,7 +97,7 @@ public:
     // Member initialization lists are faster since they don't use
     // assignment and the default constructor is not called.
     Vector3(float e0, float e1, float e2): e{ e0, e1, e2 } {};
-    
+
     /* Member functions */
     float x() const;
     float y() const;
@@ -107,12 +108,12 @@ public:
     float length() const;
     float squaredLength() const;
     void makeUnitVector();
-    
+
     /* Non-member functions */
     friend float dot(const Vector3 &v1, const Vector3 &v2);
     friend Vector3 cross(const Vector3 &v1, const Vector3 &v2);
     Vector3 unitVector(Vector3 v);
-    
+
     /* Operators */
     const Vector3 &operator+() const; // Returns ref. but can be const since returns non-modif. (const)
     Vector3 operator-() const;
@@ -134,7 +135,7 @@ public:
     // type as the right argument and must be implemented as non-members.
     friend std::istream &operator>>(std::istream &is, Vector3 &t);
     friend std::ostream &operator<<(std::ostream &os, const Vector3 &t);
-    
+
     Vector3 &operator+=(const Vector3 &v);
     Vector3 &operator+=(const float t);
     Vector3 &operator-=(const Vector3 &v);
