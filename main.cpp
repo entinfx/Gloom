@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream> // TEMP
 
 #include "Core/Vector3.hpp"
 #include "Core/Camera.hpp"
@@ -69,54 +70,61 @@ int main() {
     Vector3 **buffer = new Vector3*[width];
     for (int i = 0; i < width; i++) buffer[i] = new Vector3[height];
 
-    /* Renderer */
-    // self->_renderer = new Renderer(self->_buffer, width, height, spp, rayBounce);
+    // TEMP PPM WRITER
+    std::ofstream progressiveWriter("~/dev/gloom/Output/render.ppm", std::ifstream::trunc);
+    progressiveWriter << "P3" << std::endl << width << " " << height << std::endl << 255 << std::endl;
 
-    for (int currentSample = 0; currentSample < spp; currentSample++) {
-        std::cout << "SPP: " << currentSample + 1 << "/" << spp;
+    if (progressiveWriter) {
+        for (int currentSample = 0; currentSample < spp; currentSample++) {
+            std::cout << "SPP: " << currentSample + 1 << "/" << spp;
 
-        Vector3 dofOffset = randomInUnitDisk();
-        clock_t begin = clock();
+            Vector3 dofOffset = randomInUnitDisk();
+            clock_t begin = clock();
 
-        for (int j = height - 1; j >= 0; j--) {
-            for (int i = 0; i < width; i++) {
-                // Get ray for u, v
-                float u = (float(i) + drand48()) / float(width);
-                float v = (float(j) + drand48()) / float(height);
-                Ray ray = camera->getRay(u, v, dofOffset);
-                // Get color for ray, add to buffer
-                buffer[i][j] = (currentSample > 0) ? buffer[i][j] + color(ray, scene, 0, rayBounce) : color(ray, scene, 0, rayBounce);
+            for (int j = height - 1; j >= 0; j--) {
+                for (int i = 0; i < width; i++) {
+                    // Get ray for u, v
+                    float u = (float(i) + drand48()) / float(width);
+                    float v = (float(j) + drand48()) / float(height);
+                    Ray ray = camera->getRay(u, v, dofOffset);
+                    // Get color for ray, add to buffer
+                    buffer[i][j] = (currentSample > 0) ? buffer[i][j] + color(ray, scene, 0, rayBounce) : color(ray, scene, 0, rayBounce);
 
-                /* Average buffer */
-                Vector3 color = buffer[i][j] / (currentSample + 1); // !!! - NOT SURE ABOUT +1
+                    /* Average buffer */
+                    Vector3 color = buffer[i][j] / (currentSample + 1); // !!! - NOT SURE ABOUT +1
 
-                /* Clipping */
-                if (color.r() > 1) color = Vector3(1, color.g(), color.b());
-                if (color.g() > 1) color = Vector3(color.r(), 1, color.b());
-                if (color.b() > 1) color = Vector3(color.r(), color.g(), 1);
+                    /* Clipping */
+                    if (color.r() > 1) color = Vector3(1, color.g(), color.b());
+                    if (color.g() > 1) color = Vector3(color.r(), 1, color.b());
+                    if (color.b() > 1) color = Vector3(color.r(), color.g(), 1);
 
-                /* Gamma correction */
-                // Human eye color perception is non-linear, correction
-                // must be applied: encodedColor = linearColor^(gamma), where
-                // gamma = 1/2.2 for human eye (use gamma = 2.2 to decode back into linear).
-                // Lower gamma means brighter image (color rises faster).
-                color = Vector3(sqrt(color.r()), sqrt(color.g()), sqrt(color.b()));
-                // Convert to 8 bit per channel
-                int r = int(255.99 * color.r());
-                int g = int(255.99 * color.g());
-                int b = int(255.99 * color.b());
-                // Render
-                _renderView.buffer[i + width * (height - j - 1)] = r << 16 | g << 8 | b;
+                    /* Gamma correction */
+                    // Human eye color perception is non-linear, correction
+                    // must be applied: encodedColor = linearColor^(gamma), where
+                    // gamma = 1/2.2 for human eye (use gamma = 2.2 to decode back into linear).
+                    // Lower gamma means brighter image (color rises faster).
+                    color = Vector3(sqrt(color.r()), sqrt(color.g()), sqrt(color.b()));
+                    // Convert to 8 bit per channel
+                    int r = int(255.99 * color.r());
+                    int g = int(255.99 * color.g());
+                    int b = int(255.99 * color.b());
+                    // Render
+                    // _renderView.buffer[i + width * (height - j - 1)] = r << 16 | g << 8 | b;
+                }
             }
+
+            clock_t end = clock();
+            double timePassed = double(end - begin) / CLOCKS_PER_SEC;
+            std::cout << ", Time: " << timePassed << "s." << std::endl;
+
+            /* Perform action on completion */
+            // Update view buffer for current sample
+            // View (async): divide current pixel by current SPP + 1 and display
         }
 
-        clock_t end = clock();
-        double timePassed = double(end - begin) / CLOCKS_PER_SEC;
-        std::cout << ", Time: " << timePassed << "s." << std::endl;
-
-        /* Perform action on completion */
-        // Update view buffer for current sample
-        // View (async): divide current pixel by current SPP + 1 and display
+        progressiveWriter.close();
+    } else {
+        std::cout << "ERROR: std::ofstream failed." << std::endl;
     }
 }
 
