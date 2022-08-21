@@ -4,7 +4,6 @@
 #include "Core/Vector3.hpp"
 #include "Core/Camera.hpp"
 #include "Core/Material.hpp"
-#include "Core/Renderer.hpp"
 #include "Hitable/Hitable.hpp"
 #include "Hitable/HitableList.hpp"
 #include "RayIntersection/Sphere.hpp"
@@ -13,6 +12,35 @@
 #include "Materials/Glossy.hpp"
 #include "Materials/DiffuseLight.hpp"
 #include "Materials/Dielectric.hpp"
+
+Vector3 color(const Ray &r, Hitable *scene, int depth, int maxDepth) {
+    HitRecord hitRecord;
+    // Get hit record of closest hit for ray
+    if (scene->hit(r, 0.001, MAXFLOAT, hitRecord)) {
+        Ray scattered;
+        Vector3 attenuation;
+        // Get light emittance
+        Vector3 emitted = hitRecord.material->emitted();
+        // Get material's scattered ray for current ray and hit record
+        if (depth < maxDepth && hitRecord.material->scatter(r, hitRecord, attenuation, scattered)) {
+            /* The Rendering Equation */
+            // L0 = Le + ∫(f * Li * cos(Ø) * dw), where:
+            // L0(x,w0) - pixel color at hit point x, ray 0 direction w0
+            // Le(x,w0) - emitted radiance at hit point x, ray 0 direction w0
+            // f(x,wi->w0) - BRDF at hit point x (attenuation)
+            // Li(x,wi) - radiance at hit point x, ray i direction wi
+
+            // Shoot scattered rays recursively until a light is hit
+            return emitted + attenuation * color(scattered, scene, depth + 1, maxDepth);
+        } else {
+            // End of recursion: light was hit, return emitted radiance
+            return emitted;
+        }
+    } else {
+        // End of recursion: ray didn't hit anything - return BG color
+        return Vector3(0.0, 0.0, 0.0);
+    }
+}
 
 int main() {
     // !!!
@@ -71,7 +99,7 @@ int main() {
     for (int i = 0; i < width; i++) buffer[i] = new Vector3[height];
 
     // TEMP PPM WRITER
-    std::ofstream progressiveWriter("~/dev/gloom/Output/render.ppm", std::ifstream::trunc);
+    std::ofstream progressiveWriter("/home/entinfx/dev/gloom/Output/render.ppm", std::ifstream::trunc);
     progressiveWriter << "P3" << std::endl << width << " " << height << std::endl << 255 << std::endl;
 
     if (progressiveWriter) {
@@ -110,49 +138,17 @@ int main() {
                     int b = int(255.99 * color.b());
                     // Render
                     // _renderView.buffer[i + width * (height - j - 1)] = r << 16 | g << 8 | b;
+                    progressiveWriter << r << " " << g << " " << b << std::endl;
                 }
             }
 
             clock_t end = clock();
             double timePassed = double(end - begin) / CLOCKS_PER_SEC;
             std::cout << ", Time: " << timePassed << "s." << std::endl;
-
-            /* Perform action on completion */
-            // Update view buffer for current sample
-            // View (async): divide current pixel by current SPP + 1 and display
         }
 
         progressiveWriter.close();
     } else {
         std::cout << "ERROR: std::ofstream failed." << std::endl;
-    }
-}
-
-Vector3 color(const Ray &r, Hitable *scene, int depth, int maxDepth) {
-    HitRecord hitRecord;
-    // Get hit record of closest hit for ray
-    if (scene->hit(r, 0.001, MAXFLOAT, hitRecord)) {
-        Ray scattered;
-        Vector3 attenuation;
-        // Get light emittance
-        Vector3 emitted = hitRecord.material->emitted();
-        // Get material's scattered ray for current ray and hit record
-        if (depth < maxDepth && hitRecord.material->scatter(r, hitRecord, attenuation, scattered)) {
-            /* The Rendering Equation */
-            // L0 = Le + ∫(f * Li * cos(Ø) * dw), where:
-            // L0(x,w0) - pixel color at hit point x, ray 0 direction w0
-            // Le(x,w0) - emitted radiance at hit point x, ray 0 direction w0
-            // f(x,wi->w0) - BRDF at hit point x (attenuation)
-            // Li(x,wi) - radiance at hit point x, ray i direction wi
-
-            // Shoot scattered rays recursively until a light is hit
-            return emitted + attenuation * color(scattered, scene, depth + 1, maxDepth);
-        } else {
-            // End of recursion: light was hit, return emitted radiance
-            return emitted;
-        }
-    } else {
-        // End of recursion: ray didn't hit anything - return BG color
-        return Vector3(0.0, 0.0, 0.0);
     }
 }
