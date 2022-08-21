@@ -72,8 +72,8 @@ int main() {
     /* Renderer */
     // self->_renderer = new Renderer(self->_buffer, width, height, spp, rayBounce);
 
-    for (int s = 0; s < spp; s++) {
-        std::cout << "SPP: " << s + 1 << "/" << spp;
+    for (int currentSample = 0; currentSample < spp; currentSample++) {
+        std::cout << "SPP: " << currentSample + 1 << "/" << spp;
 
         Vector3 dofOffset = randomInUnitDisk();
         clock_t begin = clock();
@@ -85,10 +85,10 @@ int main() {
                 float v = (float(j) + drand48()) / float(height);
                 Ray ray = camera->getRay(u, v, dofOffset);
                 // Get color for ray, add to buffer
-                buffer[i][j] = (s > 0) ? buffer[i][j] + color(ray, scene, 0) : color(ray, scene, 0);
+                buffer[i][j] = (currentSample > 0) ? buffer[i][j] + color(ray, scene, 0, rayBounce) : color(ray, scene, 0, rayBounce);
 
                 /* Average buffer */
-                Vector3 color = buffer[i][j] / currentSample;
+                Vector3 color = buffer[i][j] / (currentSample + 1); // !!! - NOT SURE ABOUT +1
 
                 /* Clipping */
                 if (color.r() > 1) color = Vector3(1, color.g(), color.b());
@@ -120,7 +120,7 @@ int main() {
     }
 }
 
-Vector3 color(const Ray &r, Hitable *scene, int depth) {
+Vector3 color(const Ray &r, Hitable *scene, int depth, int maxDepth) {
     HitRecord hitRecord;
     // Get hit record of closest hit for ray
     if (scene->hit(r, 0.001, MAXFLOAT, hitRecord)) {
@@ -129,7 +129,7 @@ Vector3 color(const Ray &r, Hitable *scene, int depth) {
         // Get light emittance
         Vector3 emitted = hitRecord.material->emitted();
         // Get material's scattered ray for current ray and hit record
-        if (depth < this->rayBounce && hitRecord.material->scatter(r, hitRecord, attenuation, scattered)) {
+        if (depth < maxDepth && hitRecord.material->scatter(r, hitRecord, attenuation, scattered)) {
             /* The Rendering Equation */
             // L0 = Le + ∫(f * Li * cos(Ø) * dw), where:
             // L0(x,w0) - pixel color at hit point x, ray 0 direction w0
@@ -138,7 +138,7 @@ Vector3 color(const Ray &r, Hitable *scene, int depth) {
             // Li(x,wi) - radiance at hit point x, ray i direction wi
 
             // Shoot scattered rays recursively until a light is hit
-            return emitted + attenuation * color(scattered, scene, depth + 1);
+            return emitted + attenuation * color(scattered, scene, depth + 1, maxDepth);
         } else {
             // End of recursion: light was hit, return emitted radiance
             return emitted;
