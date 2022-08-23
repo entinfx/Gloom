@@ -2,8 +2,8 @@
 #define HitableList_hpp
 
 #include <iostream>
-#include "../Core/Ray.hpp"
-#include "../Core/HitRecord.hpp"
+#include "Ray.hpp"
+#include "HitRecord.hpp"
 #include "Hitable.hpp"
 
 class HitableList: public Hitable {

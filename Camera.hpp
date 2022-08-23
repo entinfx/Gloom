@@ -2,28 +2,28 @@
 #define Camera_hpp
 
 #include <iostream>
-#include "Vector3.hpp"
+#include "Vector3d.hpp"
 #include "Ray.hpp"
 
 class Camera {
-    Vector3 origin;
-    Vector3 lowerLeftCorner;
-    Vector3 horizontal;
-    Vector3 vertical;
-    Vector3 u;
-    Vector3 v;
-    Vector3 w;
+    Vector3d origin;
+    Vector3d lowerLeftCorner;
+    Vector3d horizontal;
+    Vector3d vertical;
+    Vector3d u;
+    Vector3d v;
+    Vector3d w;
     double lensRadius;
 public:
-    Camera(Vector3 lookFrom, Vector3 lookAt, Vector3 vUp, double vFov, double aspect, double aperture, double focusDistance);
-    inline Ray getRay(double s, double t, Vector3 randomOffset) const;
-    friend Vector3 randomInUnitDisk();
+    Camera(Vector3d lookFrom, Vector3d lookAt, Vector3d vUp, double vFov, double aspect, double aperture, double focusDistance);
+    inline Ray getRay(double s, double t, Vector3d randomOffset) const;
+    friend Vector3d randomInUnitDisk();
 };
 
-inline Vector3 randomInUnitDisk() {
-    Vector3 p;
+inline Vector3d randomInUnitDisk() {
+    Vector3d p;
     do {
-        p = 2 * Vector3(drand48(), drand48(), 0) - Vector3(1, 1, 0);
+        p = 2 * Vector3d(drand48(), drand48(), 0) - Vector3d(1, 1, 0);
     } while (dot(p, p) >= 1.0);
     return p;
 }
@@ -104,7 +104,7 @@ inline Vector3 randomInUnitDisk() {
 // (0,0,0) = 0 * (4,0,0) + 0 * (0,2,0)
 // If u and v are variables in range (0...1), then:
 // u * (4,0,0) + v * (0,2,0) = (-2,-1,-1)...(2,1,-1).
-Camera::Camera(Vector3 lookFrom, Vector3 lookAt, Vector3 vUp, double vFov, double aspect, double aperture, double focusDistance) {
+Camera::Camera(Vector3d lookFrom, Vector3d lookAt, Vector3d vUp, double vFov, double aspect, double aperture, double focusDistance) {
     lensRadius = aperture / 2;
     double theta = vFov * M_PI / 180;
     // Assuming the distance between origin and image plane (d)
@@ -121,9 +121,9 @@ Camera::Camera(Vector3 lookFrom, Vector3 lookAt, Vector3 vUp, double vFov, doubl
     vertical = 2 * halfHeight * focusDistance * v;
 }
 
-inline Ray Camera::getRay(double s, double t, Vector3 cameraOffset) const {
-    Vector3 rd = lensRadius * cameraOffset;
-    Vector3 offset = u * rd.x() + v * rd.y();
+inline Ray Camera::getRay(double s, double t, Vector3d cameraOffset) const {
+    Vector3d rd = lensRadius * cameraOffset;
+    Vector3d offset = u * rd.x() + v * rd.y();
     return Ray(origin + offset, lowerLeftCorner + s * horizontal + t * vertical - origin - offset);
 }
 

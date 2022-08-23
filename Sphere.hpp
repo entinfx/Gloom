@@ -2,20 +2,20 @@
 #define Sphere_hpp
 
 #include <iostream>
-#include "../Core/Vector3.hpp"
-#include "../Core/Ray.hpp"
-#include "../Core/HitRecord.hpp"
-#include "../Core/Material.hpp"
-#include "../Hitable/Hitable.hpp"
+#include "Vector3d.hpp"
+#include "Ray.hpp"
+#include "HitRecord.hpp"
+#include "Material.hpp"
+#include "Hitable.hpp"
 
 class Material;
 
 class Sphere: public Hitable {
-    Vector3 center;
+    Vector3d center;
     double radius;
 public:
     Sphere() {};
-    Sphere(Vector3 center, double radius, Material *material): center(center),
+    Sphere(Vector3d center, double radius, Material *material): center(center),
                                                               radius(radius),
                                                               material(material) {};
     virtual bool hit(const Ray &ray, double tMin, double tMax, HitRecord &hitRecord) const;
@@ -41,7 +41,7 @@ public:
 //   Rearrange it and solve a quadratic equation for t1 and t2:
 //   tt * (B • B) + 2t * (B • (A - C)) + ((A - C) • (A - C)) - RR = 0
 inline bool Sphere::hit(const Ray &ray, double tMin, double tMax, HitRecord &hitRecord) const {
-    Vector3 oc = ray.origin() - center;
+    Vector3d oc = ray.origin() - center;
     double a = dot(ray.direction(), ray.direction());
     double b = dot(oc, ray.direction()); // b is divided by 2
     double c = dot(oc, oc) - radius * radius;

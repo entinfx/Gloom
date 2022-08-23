@@ -2,7 +2,7 @@
 #define Material_hpp
 
 #include <iostream>
-#include "Vector3.hpp"
+#include "Vector3d.hpp"
 #include "Ray.hpp"
 #include "HitRecord.hpp"
 
@@ -13,31 +13,31 @@
 class Material {
 public:
     // Pure virtual member function
-    virtual bool scatter(const Ray &rayIn, const HitRecord &hitRecord, Vector3 &attenuation, Ray &scattered) const = 0;
-    virtual Vector3 emitted() const;
+    virtual bool scatter(const Ray &rayIn, const HitRecord &hitRecord, Vector3d &attenuation, Ray &scattered) const = 0;
+    virtual Vector3d emitted() const;
     // The following functions will be called on const *this in
     // derived classes so they have to be either friends
     // or const members.
-    friend Vector3 randomInUnitSphere();
-    friend Vector3 reflect(const Vector3 &v, const Vector3 &n);
+    friend Vector3d randomInUnitSphere();
+    friend Vector3d reflect(const Vector3d &v, const Vector3d &n);
     friend double schlick(double cosine, double refractionIndex);
-    friend bool refract(const Vector3 &v, const Vector3 &n, double niOverNt, Vector3 &refracted);
+    friend bool refract(const Vector3d &v, const Vector3d &n, double niOverNt, Vector3d &refracted);
 };
 
 /* Emitted radiance */
 // This function must be overriden by light emitters.
 // Because this function is virtual (not pure virtual)
 // Materials that don't override it will have 0 emittance.
-inline Vector3 Material::emitted() const {
-    return Vector3(0, 0, 0);
+inline Vector3d Material::emitted() const {
+    return Vector3d(0, 0, 0);
 }
 
 /* Diffuse reflection */
 // Scattered light direction is random.
-inline Vector3 randomInUnitSphere() {
-    Vector3 p;
+inline Vector3d randomInUnitSphere() {
+    Vector3d p;
     do {
-         p = 2.0 * Vector3(drand48(), drand48(), drand48()) - Vector3(1.0, 1.0, 1.0);
+         p = 2.0 * Vector3d(drand48(), drand48(), drand48()) - Vector3d(1.0, 1.0, 1.0);
     } while (p.squaredLength() >= 1.0);
     return p;
 }
@@ -59,7 +59,7 @@ inline Vector3 randomInUnitSphere() {
 // R = A - B =
 //     I - 2 * B =
 //     I - 2 * (N • I) * N
-inline Vector3 reflect(const Vector3 &v, const Vector3 &n) {
+inline Vector3d reflect(const Vector3d &v, const Vector3d &n) {
     return v - 2 * dot(v, n) * n;
 }
 
@@ -177,8 +177,8 @@ inline double schlick(double cosine, double refractionIndex) {
 //   SLOW     /Ø1
 //           / Incident ray >= Ø1 (travels towards surface)
 //          /
-inline bool refract(const Vector3 &v, const Vector3 &n, double niOverNt, Vector3 &refracted) {
-    Vector3 uv = unitVector(v);
+inline bool refract(const Vector3d &v, const Vector3d &n, double niOverNt, Vector3d &refracted) {
+    Vector3d uv = unitVector(v);
     double dt = dot(uv, n);
     double discriminant = 1.0 - niOverNt * niOverNt * (1 - dt * dt);
     // Check for Total Internal Reflection

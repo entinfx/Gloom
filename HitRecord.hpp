@@ -2,7 +2,7 @@
 #define HitRecord_hpp
 
 #include <iostream>
-#include "Vector3.hpp"
+#include "Vector3d.hpp"
 
 // Forward declare class Material so the struct
 // HitRecord knows about its existence and allows
@@ -19,8 +19,8 @@ class Material;
 
 struct HitRecord {
     double t;
-    Vector3 p;
-    Vector3 normal;
+    Vector3d p;
+    Vector3d normal;
     Material *material;
 };
 

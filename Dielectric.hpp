@@ -2,25 +2,25 @@
 #define Dielectric_hpp
 
 #include <iostream>
-#include "../Core/Vector3.hpp"
-#include "../Core/Ray.hpp"
-#include "../Core/HitRecord.hpp"
-#include "../Core/Material.hpp"
+#include "Vector3d.hpp"
+#include "Ray.hpp"
+#include "HitRecord.hpp"
+#include "Material.hpp"
 
 class Dielectric: public Material {
-    Vector3 attenuation;
+    Vector3d attenuation;
     double refractionIndex;
 public:
-    Dielectric(Vector3 a, double ri): attenuation(a), refractionIndex(ri) {}
-    virtual bool scatter(const Ray &rayIn, const HitRecord &hitRecord, Vector3 &attenuation, Ray &scattered) const;
+    Dielectric(Vector3d a, double ri): attenuation(a), refractionIndex(ri) {}
+    virtual bool scatter(const Ray &rayIn, const HitRecord &hitRecord, Vector3d &attenuation, Ray &scattered) const;
 };
 
-inline bool Dielectric::scatter(const Ray &rayIn, const HitRecord &hitRecord, Vector3 &attenuation, Ray &scattered) const {
-    Vector3 outwardNormal;
-    Vector3 reflected = reflect(rayIn.direction(), hitRecord.normal);
+inline bool Dielectric::scatter(const Ray &rayIn, const HitRecord &hitRecord, Vector3d &attenuation, Ray &scattered) const {
+    Vector3d outwardNormal;
+    Vector3d reflected = reflect(rayIn.direction(), hitRecord.normal);
     double niOverNt;
     attenuation = this->attenuation;
-    Vector3 refracted;
+    Vector3d refracted;
     double fresnelFactor; // reflection probability
     double cosine;
     // Check if ray is inside our outside the sphere

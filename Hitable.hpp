@@ -2,9 +2,9 @@
 #define Hitable_hpp
 
 #include <iostream>
-#include "../Core/Vector3.hpp"
-#include "../Core/Ray.hpp"
-#include "../Core/HitRecord.hpp"
+#include "Vector3d.hpp"
+#include "Ray.hpp"
+#include "HitRecord.hpp"
 
 /* Abstract class */
 // Is a class in which a pure virtual (= 0) function
