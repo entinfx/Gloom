@@ -16,7 +16,7 @@ public:
     // if the Ray (ray) hits the object inside the t range.
     // If so, the function returns true and fills out the
     // hitRecord.
-    virtual bool hit(const Ray &ray, float tMin, float tMax, HitRecord &hitRecord) const = 0;
+    virtual bool hit(const Ray &ray, double tMin, double tMax, HitRecord &hitRecord) const = 0;
 };
 
 #endif

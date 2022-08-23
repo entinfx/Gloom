@@ -16,7 +16,7 @@
 Vector3 color(const Ray &r, Hitable *scene, int depth, int maxDepth) {
     HitRecord hitRecord;
     // Get hit record of closest hit for ray
-    if (scene->hit(r, 0.001, MAXFLOAT, hitRecord)) {
+    if (scene->hit(r, 0.001, MAXFLOAT, hitRecord)) { // TODO: Change to DBL_MAX?
         Ray scattered;
         Vector3 attenuation;
         // Get light emittance
@@ -70,10 +70,10 @@ int main() {
     Vector3 lookFrom(0, 1.5, 3);
     Vector3 lookAt(0, 0.5, -1);
     Vector3 vUp(0, 1, 0);
-    float vFov = 40;
-    float distanceToFocus = (lookFrom - lookAt).length();
-    float aperture = 0.25;
-    Camera *camera = new Camera(lookFrom, lookAt, vUp, vFov, float(width) / float(height), aperture, distanceToFocus);
+    double vFov = 40;
+    double distanceToFocus = (lookFrom - lookAt).length();
+    double aperture = 0.25;
+    Camera *camera = new Camera(lookFrom, lookAt, vUp, vFov, double (width) / double(height), aperture, distanceToFocus);
 
     /* Set up image buffer */
     Vector3 **buffer = new Vector3*[height];
@@ -93,8 +93,8 @@ int main() {
             for (int line = height - 1; line >= 0; --line) {
                 for (int pixel = 0; pixel < width; ++pixel) {
                     // Get ray for u, v
-                    float u = (float(pixel) + drand48()) / float(width);
-                    float v = (float(line) + drand48()) / float(height);
+                    double u = (double(pixel) + drand48()) / double(width);
+                    double v = (double(line) + drand48()) / double(height);
                     Ray ray = camera->getRay(u, v, dofOffset);
                     // Get color for ray, add to buffer
                     buffer[line][pixel] = (currentSample > 0) ? buffer[line][pixel] + color(ray, scene, 0, rayBounce) : color(ray, scene, 0, rayBounce);

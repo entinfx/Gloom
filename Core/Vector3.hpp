@@ -91,34 +91,34 @@
 //  /    V
 
 class Vector3 {
-    float e[3]; // only accessable by members and friends
+    double e[3]; // only accessable by members and friends
 public:
     Vector3() {}; // implicitly inline since defined here
     // Member initialization lists are faster since they don't use
     // assignment and the default constructor is not called.
-    Vector3(float e0, float e1, float e2): e{ e0, e1, e2 } {};
+    Vector3(double e0, double e1, double e2): e{ e0, e1, e2 } {};
 
     /* Member functions */
-    float x() const;
-    float y() const;
-    float z() const;
-    float r() const;
-    float g() const;
-    float b() const;
-    float length() const;
-    float squaredLength() const;
+    double x() const;
+    double y() const;
+    double z() const;
+    double r() const;
+    double g() const;
+    double b() const;
+    double length() const;
+    double squaredLength() const;
     void makeUnitVector();
 
     /* Non-member functions */
-    friend float dot(const Vector3 &v1, const Vector3 &v2);
+    friend double dot(const Vector3 &v1, const Vector3 &v2);
     friend Vector3 cross(const Vector3 &v1, const Vector3 &v2);
     Vector3 unitVector(Vector3 v);
 
     /* Operators */
     const Vector3 &operator+() const; // Returns ref. but can be const since returns non-modif. (const)
     Vector3 operator-() const;
-    float operator[](int i) const;
-    float &operator[](int i); // Cannot be const since returns modifiable and non-const object
+    double operator[](int i) const;
+    double &operator[](int i); // Cannot be const since returns modifiable and non-const object
     // * Binary operators are implemented as non-members to
     //   maintain operator's symmetry (a + b = b + a) that's
     //   otherwise (with an implicit *this) hard to achieve.
@@ -128,48 +128,48 @@ public:
     friend Vector3 operator-(const Vector3 &v1, const Vector3 &v2);
     friend Vector3 operator*(const Vector3 &v1, const Vector3 &v2);
     friend Vector3 operator/(const Vector3 &v1, const Vector3 &v2);
-    friend Vector3 operator*(float t, const Vector3 &v);
-    friend Vector3 operator*(const Vector3 &v, float t);
-    friend Vector3 operator/(Vector3 v, float t);
+    friend Vector3 operator*(double t, const Vector3 &v);
+    friend Vector3 operator*(const Vector3 &v, double t);
+    friend Vector3 operator/(Vector3 v, double t);
     // Stream extraction and insertion operators take a user defined
     // type as the right argument and must be implemented as non-members.
     friend std::istream &operator>>(std::istream &is, Vector3 &t);
     friend std::ostream &operator<<(std::ostream &os, const Vector3 &t);
 
     Vector3 &operator+=(const Vector3 &v);
-    Vector3 &operator+=(const float t);
+    Vector3 &operator+=(const double t);
     Vector3 &operator-=(const Vector3 &v);
     Vector3 &operator*=(const Vector3 &v);
-    Vector3 &operator*=(const float t);
+    Vector3 &operator*=(const double t);
     Vector3 &operator/=(const Vector3 &v);
-    Vector3 &operator/=(const float t);
+    Vector3 &operator/=(const double t);
 };
 
 /* Member functions */
-inline float Vector3::x() const { return e[0]; }
-inline float Vector3::y() const { return e[1]; }
-inline float Vector3::z() const { return e[2]; }
-inline float Vector3::r() const { return e[0]; }
-inline float Vector3::g() const { return e[1]; }
-inline float Vector3::b() const { return e[2]; }
+inline double Vector3::x() const { return e[0]; }
+inline double Vector3::y() const { return e[1]; }
+inline double Vector3::z() const { return e[2]; }
+inline double Vector3::r() const { return e[0]; }
+inline double Vector3::g() const { return e[1]; }
+inline double Vector3::b() const { return e[2]; }
 
-inline float Vector3::length() const {
+inline double Vector3::length() const {
     return sqrt(e[0] * e[0] + e[1] * e[1] + e[2] * e[2]);
 }
 
-inline float Vector3::squaredLength() const {
+inline double Vector3::squaredLength() const {
     return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
 }
 
 inline void Vector3::makeUnitVector() {
-    float k = 1.0 / sqrt(e[0] * e[0] + e[1] * e[1] + e[2] * e[2]);
+    double k = 1.0 / sqrt(e[0] * e[0] + e[1] * e[1] + e[2] * e[2]);
     e[0] *= k;
     e[1] *= k;
     e[2] *= k;
 }
 
 /* Non-member functions */
-inline float dot(const Vector3 &v1, const Vector3 &v2) {
+inline double dot(const Vector3 &v1, const Vector3 &v2) {
     return v1.e[0] * v2.e[0] + v1.e[1] * v2.e[1] + v1.e[2] * v2.e[2];
 }
 
@@ -188,8 +188,8 @@ inline Vector3 unitVector(Vector3 v) {
 /* Operators */
 inline const Vector3 &Vector3::operator+() const { return *this; }
 inline Vector3 Vector3::operator-() const { return Vector3(-e[0], -e[1], -e[2]); }
-inline float Vector3::operator[](int i) const { return e[i]; }
-inline float &Vector3::operator[](int i) { return e[i]; }
+inline double Vector3::operator[](int i) const { return e[i]; }
+inline double &Vector3::operator[](int i) { return e[i]; }
 
 inline Vector3 operator+(const Vector3 &v1, const Vector3 &v2) {
     return Vector3(v1.e[0] + v2.e[0], v1.e[1] + v2.e[1], v1.e[2] + v2.e[2]);
@@ -207,15 +207,15 @@ inline Vector3 operator/(const Vector3 &v1, const Vector3 &v2) {
     return Vector3(v1.e[0] / v2.e[0], v1.e[1] / v2.e[1], v1.e[2] / v2.e[2]);
 }
 
-inline Vector3 operator*(float t, const Vector3 &v) {
+inline Vector3 operator*(double t, const Vector3 &v) {
     return Vector3(t * v.e[0], t * v.e[1], t * v.e[2]);
 }
 
-inline Vector3 operator*(const Vector3 &v, float t) {
+inline Vector3 operator*(const Vector3 &v, double t) {
     return Vector3(t * v.e[0], t * v.e[1], t * v.e[2]);
 }
 
-inline Vector3 operator/(Vector3 v, float t) {
+inline Vector3 operator/(Vector3 v, double t) {
     return Vector3(v.e[0]/t, v.e[1]/t, v.e[2]/t);
 }
 
@@ -236,8 +236,8 @@ inline Vector3 &Vector3::operator+=(const Vector3 &v) {
     return *this;
 }
 
-inline Vector3 &Vector3::operator+=(const float t) {
-    float k = 1.0/t;
+inline Vector3 &Vector3::operator+=(const double t) {
+    double k = 1.0/t;
     e[0] *= k;
     e[1] *= k;
     e[2] *= k;
@@ -258,7 +258,7 @@ inline Vector3 &Vector3::operator*=(const Vector3 &v) {
     return *this;
 }
 
-inline Vector3 &Vector3::operator*=(const float t) {
+inline Vector3 &Vector3::operator*=(const double t) {
     e[0] *= t;
     e[1] *= t;
     e[2] *= t;
@@ -272,8 +272,8 @@ inline Vector3 &Vector3::operator/=(const Vector3 &v) {
     return *this;
 }
 
-inline Vector3 &Vector3::operator/=(const float t) {
-    float k = 1.0 / t;
+inline Vector3 &Vector3::operator/=(const double t) {
+    double k = 1.0 / t;
     e[0] *= k;
     e[1] *= k;
     e[2] *= k;

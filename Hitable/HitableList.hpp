@@ -12,10 +12,10 @@ class HitableList: public Hitable {
 public:
     HitableList() {};
     HitableList(Hitable **l, int n): list(l), listSize(n) {};
-    virtual bool hit(const Ray &ray, float tMin, float tMax, HitRecord &hitRecord) const;
+    virtual bool hit(const Ray &ray, double tMin, double tMax, HitRecord &hitRecord) const;
 };
 
-inline bool HitableList::hit(const Ray &ray, float tMin, float tMax, HitRecord &hitRecord) const {
+inline bool HitableList::hit(const Ray &ray, double tMin, double tMax, HitRecord &hitRecord) const {
     HitRecord tempHitRecord;
     bool hitAnything = false;
     double closestSoFar = tMax;

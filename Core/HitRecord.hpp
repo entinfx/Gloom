@@ -18,7 +18,7 @@
 class Material;
 
 struct HitRecord {
-    float t;
+    double t;
     Vector3 p;
     Vector3 normal;
     Material *material;

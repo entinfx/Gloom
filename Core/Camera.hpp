@@ -13,10 +13,10 @@ class Camera {
     Vector3 u;
     Vector3 v;
     Vector3 w;
-    float lensRadius;
+    double lensRadius;
 public:
-    Camera(Vector3 lookFrom, Vector3 lookAt, Vector3 vUp, float vFov, float aspect, float aperture, float focusDistance);
-    inline Ray getRay(float s, float t, Vector3 randomOffset) const;
+    Camera(Vector3 lookFrom, Vector3 lookAt, Vector3 vUp, double vFov, double aspect, double aperture, double focusDistance);
+    inline Ray getRay(double s, double t, Vector3 randomOffset) const;
     friend Vector3 randomInUnitDisk();
 };
 
@@ -104,14 +104,14 @@ inline Vector3 randomInUnitDisk() {
 // (0,0,0) = 0 * (4,0,0) + 0 * (0,2,0)
 // If u and v are variables in range (0...1), then:
 // u * (4,0,0) + v * (0,2,0) = (-2,-1,-1)...(2,1,-1).
-Camera::Camera(Vector3 lookFrom, Vector3 lookAt, Vector3 vUp, float vFov, float aspect, float aperture, float focusDistance) {
+Camera::Camera(Vector3 lookFrom, Vector3 lookAt, Vector3 vUp, double vFov, double aspect, double aperture, double focusDistance) {
     lensRadius = aperture / 2;
-    float theta = vFov * M_PI / 180;
+    double theta = vFov * M_PI / 180;
     // Assuming the distance between origin and image plane (d)
     // is equal to 1, the ratio between the vertical FOV (Ø) and
     // the half height of the image plane is:
-    float halfHeight = tan(theta / 2);
-    float halfWidth = aspect * halfHeight;
+    double halfHeight = tan(theta / 2);
+    double halfWidth = aspect * halfHeight;
     origin = lookFrom;
     w = unitVector(lookFrom - lookAt);
     u = unitVector(cross(vUp, w));
@@ -121,7 +121,7 @@ Camera::Camera(Vector3 lookFrom, Vector3 lookAt, Vector3 vUp, float vFov, float 
     vertical = 2 * halfHeight * focusDistance * v;
 }
 
-inline Ray Camera::getRay(float s, float t, Vector3 cameraOffset) const {
+inline Ray Camera::getRay(double s, double t, Vector3 cameraOffset) const {
     Vector3 rd = lensRadius * cameraOffset;
     Vector3 offset = u * rd.x() + v * rd.y();
     return Ray(origin + offset, lowerLeftCorner + s * horizontal + t * vertical - origin - offset);

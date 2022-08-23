@@ -20,8 +20,8 @@ public:
     // or const members.
     friend Vector3 randomInUnitSphere();
     friend Vector3 reflect(const Vector3 &v, const Vector3 &n);
-    friend float schlick(float cosine, float refractionIndex);
-    friend bool refract(const Vector3 &v, const Vector3 &n, float niOverNt, Vector3 &refracted);
+    friend double schlick(double cosine, double refractionIndex);
+    friend bool refract(const Vector3 &v, const Vector3 &n, double niOverNt, Vector3 &refracted);
 };
 
 /* Emitted radiance */
@@ -78,10 +78,10 @@ inline Vector3 reflect(const Vector3 &v, const Vector3 &n) {
 // * Parameters:
 //   cosine - cos of incident light angle
 //   refractionIndex - IOR of slow medium
-inline float schlick(float cosine, float refractionIndex) {
+inline double schlick(double cosine, double refractionIndex) {
     // Specular reflection coefficient of light incoming parallel
     // to normal (minimal reflection)
-    float r0 = (1 - refractionIndex) / (1 + refractionIndex);
+    double r0 = (1 - refractionIndex) / (1 + refractionIndex);
     r0 *= r0;
     // Specular reflection coefficient
     return r0 + (1 - r0) * pow((1 - cosine), 5);
@@ -177,10 +177,10 @@ inline float schlick(float cosine, float refractionIndex) {
 //   SLOW     /Ø1
 //           / Incident ray >= Ø1 (travels towards surface)
 //          /
-inline bool refract(const Vector3 &v, const Vector3 &n, float niOverNt, Vector3 &refracted) {
+inline bool refract(const Vector3 &v, const Vector3 &n, double niOverNt, Vector3 &refracted) {
     Vector3 uv = unitVector(v);
-    float dt = dot(uv, n);
-    float discriminant = 1.0 - niOverNt * niOverNt * (1 - dt * dt);
+    double dt = dot(uv, n);
+    double discriminant = 1.0 - niOverNt * niOverNt * (1 - dt * dt);
     // Check for Total Internal Reflection
     if (discriminant > 0) {
         // This function only receives corrected normals relative
@@ -191,17 +191,17 @@ inline bool refract(const Vector3 &v, const Vector3 &n, float niOverNt, Vector3 
         //    and make C1 (dt or dot(uv, n)) always positive.
         // 2. Flip signs in the original T equation
         //    T = n * I - N * (n * C1 + C2)
-        
+
         // Option #1
         // refracted = niOverNt * uv + n * (niOverNt * abs(dt) - sqrt(discriminant));
-        
+
         // Option #2
         // refracted = niOverNt * uv - n * (niOverNt * dt + sqrt(discriminant));, or:
         refracted = niOverNt * (uv - n * dt) - n * sqrt(discriminant);
-        
+
         // No corrections (incorrect)
         // refracted = niOverNt * uv + n * (niOverNt * dt - sqrt(discriminant));
-        
+
         return true;
     } else {
         // TIR: No refraction

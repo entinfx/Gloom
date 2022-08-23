@@ -15,8 +15,8 @@ public:
 };
 
 inline bool Glossy::scatter(const Ray &rayIn, const HitRecord &hitRecord, Vector3 &attenuation, Ray &scattered) const {
-    float cosine = 1.5 * dot(rayIn.direction(), hitRecord.normal) / rayIn.direction().length();
-    float fresnelFactor = schlick(-cosine, 1.5); // reflection probability
+    double cosine = 1.5 * dot(rayIn.direction(), hitRecord.normal) / rayIn.direction().length();
+    double fresnelFactor = schlick(-cosine, 1.5); // reflection probability
     if (drand48() < fresnelFactor) {
         // Specular
         Vector3 reflected = reflect(unitVector(rayIn.direction()), hitRecord.normal);

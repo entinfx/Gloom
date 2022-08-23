@@ -9,9 +9,9 @@
 
 class Metal: public Material {
     Vector3 albedo;
-    float fuzz;
+    double fuzz;
 public:
-    Metal(const Vector3 &albedo, float f): albedo(albedo), fuzz(f) {}
+    Metal(const Vector3 &albedo, double f): albedo(albedo), fuzz(f) {}
     virtual bool scatter(const Ray &rayIn, const HitRecord &hitRecord, Vector3 &attenuation, Ray &scattered) const;
 };
 

@@ -12,13 +12,13 @@ class Material;
 
 class Sphere: public Hitable {
     Vector3 center;
-    float radius;
+    double radius;
 public:
     Sphere() {};
-    Sphere(Vector3 center, float radius, Material *material): center(center),
+    Sphere(Vector3 center, double radius, Material *material): center(center),
                                                               radius(radius),
                                                               material(material) {};
-    virtual bool hit(const Ray &ray, float tMin, float tMax, HitRecord &hitRecord) const;
+    virtual bool hit(const Ray &ray, double tMin, double tMax, HitRecord &hitRecord) const;
     Material *material;
 };
 
@@ -40,15 +40,15 @@ public:
 //   (A + t * B - C) • (A + t * B - C) = r * r.
 //   Rearrange it and solve a quadratic equation for t1 and t2:
 //   tt * (B • B) + 2t * (B • (A - C)) + ((A - C) • (A - C)) - RR = 0
-inline bool Sphere::hit(const Ray &ray, float tMin, float tMax, HitRecord &hitRecord) const {
+inline bool Sphere::hit(const Ray &ray, double tMin, double tMax, HitRecord &hitRecord) const {
     Vector3 oc = ray.origin() - center;
-    float a = dot(ray.direction(), ray.direction());
-    float b = dot(oc, ray.direction()); // b is divided by 2
-    float c = dot(oc, oc) - radius * radius;
-    float discriminant = b * b - a * c;
-    if (discriminant > 0) {        
+    double a = dot(ray.direction(), ray.direction());
+    double b = dot(oc, ray.direction()); // b is divided by 2
+    double c = dot(oc, oc) - radius * radius;
+    double discriminant = b * b - a * c;
+    if (discriminant > 0) {
         // Outer surface hit t
-        float t = (-b - sqrt(discriminant)) / a;
+        double t = (-b - sqrt(discriminant)) / a;
         if (t < tMax && t > tMin) {
             hitRecord.t = t;
             hitRecord.p = ray.pointAtParameter(hitRecord.t);

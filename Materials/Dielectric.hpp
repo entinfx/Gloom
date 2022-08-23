@@ -9,20 +9,20 @@
 
 class Dielectric: public Material {
     Vector3 attenuation;
-    float refractionIndex;
+    double refractionIndex;
 public:
-    Dielectric(Vector3 a, float ri): attenuation(a), refractionIndex(ri) {}
+    Dielectric(Vector3 a, double ri): attenuation(a), refractionIndex(ri) {}
     virtual bool scatter(const Ray &rayIn, const HitRecord &hitRecord, Vector3 &attenuation, Ray &scattered) const;
 };
 
 inline bool Dielectric::scatter(const Ray &rayIn, const HitRecord &hitRecord, Vector3 &attenuation, Ray &scattered) const {
     Vector3 outwardNormal;
     Vector3 reflected = reflect(rayIn.direction(), hitRecord.normal);
-    float niOverNt;
+    double niOverNt;
     attenuation = this->attenuation;
     Vector3 refracted;
-    float fresnelFactor; // reflection probability
-    float cosine;
+    double fresnelFactor; // reflection probability
+    double cosine;
     // Check if ray is inside our outside the sphere
     if (dot(rayIn.direction(), hitRecord.normal) > 0) {
         outwardNormal = -hitRecord.normal;

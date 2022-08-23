@@ -9,7 +9,7 @@
 //   p - point along the Ray
 //   a - origin point
 //   b - vector
-//   t - float constant
+//   t - double constant
 //
 // * Ray in 3d space:
 //        0t        1t        2t
@@ -23,11 +23,11 @@ public:
     Ray(const Vector3 &a, const Vector3 &b): a(a), b(b) {};
     Vector3 origin() const;
     Vector3 direction() const;
-    Vector3 pointAtParameter(float t) const;
+    Vector3 pointAtParameter(double t) const;
 };
 
 inline Vector3 Ray::origin() const { return this->a; }
 inline Vector3 Ray::direction() const { return this->b; }
-inline Vector3 Ray::pointAtParameter(float t) const { return this->a + t * this->b; }
+inline Vector3 Ray::pointAtParameter(double t) const { return this->a + t * this->b; }
 
 #endif
