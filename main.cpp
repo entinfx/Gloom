@@ -90,17 +90,17 @@ int main() {
             Vector3 dofOffset = randomInUnitDisk();
             clock_t begin = clock();
 
-            for (int j = height - 1; j >= 0; --j) {
-                for (int i = 0; i < width; ++i) {
+            for (int line = height - 1; line >= 0; --line) {
+                for (int pixel = 0; pixel < width; ++pixel) {
                     // Get ray for u, v
-                    float u = (float(i) + drand48()) / float(width);
-                    float v = (float(j) + drand48()) / float(height);
+                    float u = (float(pixel) + drand48()) / float(width);
+                    float v = (float(line) + drand48()) / float(height);
                     Ray ray = camera->getRay(u, v, dofOffset);
                     // Get color for ray, add to buffer
-                    buffer[j][i] = (currentSample > 0) ? buffer[j][i] + color(ray, scene, 0, rayBounce) : color(ray, scene, 0, rayBounce);
+                    buffer[line][pixel] = (currentSample > 0) ? buffer[line][pixel] + color(ray, scene, 0, rayBounce) : color(ray, scene, 0, rayBounce);
 
                     /* Average buffer */
-                    Vector3 color = buffer[j][i] / (currentSample + 1);
+                    Vector3 color = buffer[line][pixel] / (currentSample + 1);
 
                     /* Clipping */
                     if (color.r() > 1) color = Vector3(1, color.g(), color.b());
