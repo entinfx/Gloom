@@ -1,5 +1,5 @@
 #include <iostream>
-#include <fstream> // TEMP
+#include <fstream>
 
 #include "Core/Vector3.hpp"
 #include "Core/Camera.hpp"
@@ -43,17 +43,11 @@ Vector3 color(const Ray &r, Hitable *scene, int depth, int maxDepth) {
 }
 
 int main() {
-    // !!!
-    // deleted unsigned int *buffer
-    // deleted Vector3 buffer
-
-    // WHAT THE ACTUAL FUCK
-
     /* Image parameters */
-    int width = 960;
-    int height = 400;
-    int spp = 800;
-    int rayBounce = 50;
+    const int width = 960;
+    const int height = 400;
+    const int spp = 800;
+    const int rayBounce = 50;
 
     /* Scene */
     Material *wallMaterial = new Lambertian(Vector3(0.15, 0.26, 0.6));
@@ -81,22 +75,9 @@ int main() {
     float aperture = 0.25;
     Camera *camera = new Camera(lookFrom, lookAt, vUp, vFov, float(width) / float(height), aperture, distanceToFocus);
 
-    /* Set up buffers for Renderer and RenderView */
-    // Looks like we're dealing with 2 frame buffers here - one is the main
-    // buffer for storing raw data and the other one is for the view to render
-    // onto periodically for continuous updates.
-
-    // Buffer:
-    //
-    // Sample 1       Sample 2       Sample n
-    // 255 255 255    255 255 255
-    // 255 255 255 += 255 255 255 += ...
-    // 255 255 255    255 255 255
-    //
-    // Final frame = pixel / n
-
-    Vector3 **buffer = new Vector3*[width];
-    for (int i = 0; i < width; i++) buffer[i] = new Vector3[height];
+    /* Set up image buffer */
+    Vector3 **buffer = new Vector3*[height];
+    for (int i = 0; i < height; i++) buffer[i] = new Vector3[width];
 
     // TEMP PPM WRITER
     std::ofstream progressiveWriter("/home/entinfx/dev/gloom/Output/render.ppm", std::ifstream::trunc);
@@ -109,17 +90,17 @@ int main() {
             Vector3 dofOffset = randomInUnitDisk();
             clock_t begin = clock();
 
-            for (int j = height - 1; j >= 0; j--) {
-                for (int i = 0; i < width; i++) {
+            for (int j = height - 1; j >= 0; --j) {
+                for (int i = 0; i < width; ++i) {
                     // Get ray for u, v
                     float u = (float(i) + drand48()) / float(width);
                     float v = (float(j) + drand48()) / float(height);
                     Ray ray = camera->getRay(u, v, dofOffset);
                     // Get color for ray, add to buffer
-                    buffer[i][j] = (currentSample > 0) ? buffer[i][j] + color(ray, scene, 0, rayBounce) : color(ray, scene, 0, rayBounce);
+                    buffer[j][i] = (currentSample > 0) ? buffer[j][i] + color(ray, scene, 0, rayBounce) : color(ray, scene, 0, rayBounce);
 
                     /* Average buffer */
-                    Vector3 color = buffer[i][j] / (currentSample + 1); // !!! - NOT SURE ABOUT +1
+                    Vector3 color = buffer[j][i] / (currentSample + 1);
 
                     /* Clipping */
                     if (color.r() > 1) color = Vector3(1, color.g(), color.b());
@@ -133,11 +114,11 @@ int main() {
                     // Lower gamma means brighter image (color rises faster).
                     color = Vector3(sqrt(color.r()), sqrt(color.g()), sqrt(color.b()));
                     // Convert to 8 bit per channel
-                    int r = int(255.99 * color.r());
-                    int g = int(255.99 * color.g());
-                    int b = int(255.99 * color.b());
+                    int r = static_cast<int>(255.999 * color.r());
+                    int g = static_cast<int>(255.999 * color.g());
+                    int b = static_cast<int>(255.999 * color.b());
                     // Render
-                    // _renderView.buffer[i + width * (height - j - 1)] = r << 16 | g << 8 | b;
+                    // _renderView.buffer[i + width * (height - j - 1)] = r << 16 | g << 8 | b; // i and j might have to be swapped, careful
                     progressiveWriter << r << " " << g << " " << b << std::endl;
                 }
             }
